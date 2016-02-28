@@ -557,7 +557,9 @@ namespace omg
 
 		Graph()
 			: vertices(this),
-			  edges(this)
+			  edges(this),
+			  _supergraph(nullptr),
+			  _subgraphs()
 		{ }
 
 		void map(Graph<VertexType, EdgeType>* subgraph)
