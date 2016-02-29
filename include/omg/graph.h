@@ -248,11 +248,6 @@ namespace omg
 					return _i != other._i;
 				}
 
-				inline vertex_container<VertexType>& container()
-				{
-					return _i->second;
-				}
-
 				inline std::size_t id()
 				{
 					return _i->first;
@@ -265,8 +260,8 @@ namespace omg
 
 				void map(iterator other)
 				{
-					_i->second._add_sub_vertex(&(other.container()));
-					other.container()._set_super_vertex(&(this->container()));
+					_i->second._add_sub_vertex(&(other._container()));
+					other._container()._set_super_vertex(&(this->_container()));
 				}
 
 				template<typename F>
@@ -278,8 +273,8 @@ namespace omg
 
 				void unmap(iterator other)
 				{
-					_i->second._remove_sub_vertex(&(other.container()));
-					other.container()._unset_super_vertex();
+					_i->second._remove_sub_vertex(&(other._container()));
+					other._container()._unset_super_vertex();
 				}
 
 				template<typename F>
@@ -287,6 +282,41 @@ namespace omg
 				{
 					unmap(other);
 					f(**this, *other);
+				}
+
+				bool has_subvertices()
+				{
+					return !_container()._sub_vertices.empty();
+				}
+
+				bool has_supervertex()
+				{
+					return _container()._super_vertex != nullptr;
+				}
+
+				inline VertexType* super_vertex()
+				{
+					return has_supervertex() ? &(_container()._super_vertex->_element) : nullptr;
+				}
+
+				inline std::vector<VertexType*> sub_vertices()
+				{
+					std::vector<VertexType*> v;
+
+					for(auto c : _container()._sub_vertices)
+						v.push_back(&(c->_element));
+
+					return v;
+				}
+
+				inline vertex_container<VertexType>& _container()
+				{
+					return _i->second;
+				}
+
+				inline VertexType* _ptr()
+				{
+					return &(_i->second._element);
 				}
 
 			private:
@@ -345,7 +375,7 @@ namespace omg
 
 			void _add_neighbor(iterator neighbor, iterator vertex) // invoked from edge_proxy
 			{
-				vertex.container()._add_neighbor(&neighbor.container());
+				vertex._container()._add_neighbor(&neighbor._container());
 			}
 
 			Graph<VertexType, EdgeType>* _graph;
@@ -398,11 +428,6 @@ namespace omg
 					return _i != other._i;
 				}
 
-				inline edge_container<EdgeType>& container()
-				{
-					return _i->second;
-				}
-
 				inline std::size_t id()
 				{
 					return _i->first;
@@ -410,8 +435,8 @@ namespace omg
 
 				void map_link(iterator other)
 				{
-					_i->second._add_sub_edge(&(other.container()));
-					other.container()._set_super_edge(&(this->container()));
+					_i->second._add_sub_edge(&(other._container()));
+					other._container()._set_super_edge(&(this->_container()));
 				}
 
 				template<typename F>
@@ -423,8 +448,8 @@ namespace omg
 
 				void map_path(iterator other)
 				{
-					_i->second._add_sub_edge(&(other.container()));
-					other.container()._add_super_edge(&(this->container()));
+					_i->second._add_sub_edge(&(other._container()));
+					other._container()._add_super_edge(&(this->_container()));
 				}
 
 				template<typename F>
@@ -436,8 +461,8 @@ namespace omg
 
 				void unmap(iterator other)
 				{
-					_i->second._remove_sub_edge(&(other.container()));
-					other.container()._unset_super_edge();
+					_i->second._remove_sub_edge(&(other._container()));
+					other._container()._unset_super_edge();
 				}
 
 				template<typename F>
@@ -445,6 +470,46 @@ namespace omg
 				{
 					unmap(other);
 					f(**this, *other);
+				}
+
+				bool has_subedges()
+				{
+					return !_container()._sub_edges.empty();
+				}
+
+				bool has_superedge()
+				{
+					return !_container()._super_edge.empty();
+				}
+
+				inline std::vector<EdgeType*> super_edge()
+				{
+					std::vector<EdgeType*> v;
+
+					for(auto c : _container()._super_edge)
+						v.push_back(&(c->_element));
+
+					return v;
+				}
+
+				inline std::vector<EdgeType*> sub_edges()
+				{
+					std::vector<EdgeType*> v;
+
+					for(auto c : _container()._sub_edges)
+						v.push_back(&(c->_element));
+
+					return v;
+				}
+
+				inline edge_container<EdgeType>& _container()
+				{
+					return _i->second;
+				}
+
+				inline EdgeType* _ptr()
+				{
+					return &(_i->second._element);
 				}
 
 			private:
@@ -511,8 +576,8 @@ namespace omg
 				typename vertex_proxy::iterator to,
 				iterator edge)
 			{
-				edge.container()._set_from(&from.container());
-				edge.container()._set_to(&to.container());
+				edge._container()._set_from(&from._container());
+				edge._container()._set_to(&to._container());
 			}
 
 			void _set_neighbors_bidirectional(
@@ -525,8 +590,8 @@ namespace omg
 
 			void _unset_neighbors_bidirectional(iterator edge)
 			{
-				edge.container()._from->_remove_neighbor(edge.container()._to);
-				edge.container()._to->_remove_neighbor(edge.container()._from);
+				edge._container()._from->_remove_neighbor(edge._container()._to);
+				edge._container()._to->_remove_neighbor(edge._container()._from);
 			}
 
 			void _set_edges_bidirectional(
@@ -534,18 +599,18 @@ namespace omg
 				typename vertex_proxy::iterator to,
 				iterator edge)
 			{
-				from.container()._add_out_edge(&edge.container());
-				to.container()._add_in_edge(&edge.container());
-				to.container()._add_out_edge(&edge.container());
-				from.container()._add_in_edge(&edge.container());
+				from._container()._add_out_edge(&edge._container());
+				to._container()._add_in_edge(&edge._container());
+				to._container()._add_out_edge(&edge._container());
+				from._container()._add_in_edge(&edge._container());
 			}
 
 			void _unset_edges_bidirectional(iterator edge)
 			{
-				edge.container()._from->_remove_in_edge(&edge.container());
-				edge.container()._to->_remove_in_edge(&edge.container());
-				edge.container()._from->_remove_out_edge(&edge.container());
-				edge.container()._to->_remove_out_edge(&edge.container());
+				edge._container()._from->_remove_in_edge(&edge._container());
+				edge._container()._to->_remove_in_edge(&edge._container());
+				edge._container()._from->_remove_out_edge(&edge._container());
+				edge._container()._to->_remove_out_edge(&edge._container());
 			}
 
 			Graph<VertexType, EdgeType>* _graph;
