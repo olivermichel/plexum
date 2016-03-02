@@ -29,6 +29,18 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		REQUIRE(g1.edges.count() == 1);
 	}
 
+	SECTION("edge iterators hold iterators to connected vertices")
+	{
+		auto a = g1.vertices.add(1);
+		auto b = g1.vertices.add(2);
+		auto e =g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+
+		REQUIRE(e.from() == a);
+		REQUIRE(e.to() == b);
+		REQUIRE(e.from().id() == 1);
+		REQUIRE(e.to().id() == 2);
+	}
+
 	SECTION("vertices and edges can be accessed through sequential indices")
 	{
 		g1.vertices.add(1);
@@ -48,6 +60,7 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		REQUIRE_THROWS(g1.edges[3]);
 	}
 }
+
 
 TEST_CASE("sub and super graphs", "[Graph]")
 {

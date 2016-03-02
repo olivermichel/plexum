@@ -60,11 +60,13 @@ namespace omg
 
 			container() = delete;
 
-			container(T e)
-				: _element(e)
+			container(unsigned id, T e)
+				: _id(id),
+				  _element(e)
 			{ }
 
 		protected:
+			unsigned _id;
 			T _element;
 		};
 
@@ -83,8 +85,8 @@ namespace omg
 
 		public:
 
-			vertex_container(VertexType e)
-				: container<VertexType>(e),
+			vertex_container(unsigned id, VertexType e)
+				: container<VertexType>(id, e),
 				  _neighbors(),
 				  _in_edges(),
 				  _out_edges(),
@@ -163,8 +165,8 @@ namespace omg
 
 		public:
 
-			edge_container(EdgeType e)
-				: container<EdgeType>(e),
+			edge_container(unsigned id, EdgeType e)
+				: container<EdgeType>(id, e),
 				  _from(nullptr),
 				  _to(nullptr)
 			{ }
@@ -331,7 +333,7 @@ namespace omg
 					return has_supervertex() ? &(_container()._super_vertex->_element) : nullptr;
 				}
 
-				inline std::vector<VertexType*> sub_vertices()
+				std::vector<VertexType*> sub_vertices()
 				{
 					std::vector<VertexType*> v;
 
@@ -373,7 +375,17 @@ namespace omg
 
 			iterator add(const VertexType& vertex)
 			{
-				return iterator(_graph, _vertices.insert(_vertices.end(), std::make_pair(_i++, vertex)));
+
+				auto i = iterator(
+					_graph,
+					_vertices.insert(
+						_vertices.end(),
+						std::make_pair(_i, vertex_container<VertexType>(_i, vertex))
+					)
+				);
+
+				_i++;
+				return i;
 			}
 
 			iterator remove(iterator pos)
@@ -545,7 +557,7 @@ namespace omg
 					return v;
 				}
 
-				inline std::vector<EdgeType*> sub_edges()
+				std::vector<EdgeType*> sub_edges()
 				{
 					std::vector<EdgeType*> v;
 
@@ -553,6 +565,16 @@ namespace omg
 						v.push_back(&(c->_element));
 
 					return v;
+				}
+
+				inline typename vertex_proxy::iterator from()
+				{
+					return _g->vertices[_container()._from->_id];
+				}
+
+				inline typename vertex_proxy::iterator to()
+				{
+					return _g->vertices[_container()._to->_id];
 				}
 
 				inline Graph<VertexType, EdgeType>* _graph()
@@ -590,10 +612,18 @@ namespace omg
 				typename vertex_proxy::iterator to,
 				const EdgeType& edge)
 			{
-				auto i = iterator(_graph, _edges.insert(_edges.end(), std::make_pair(_i++, edge)));
+				auto i = iterator(
+					_graph,
+					_edges.insert(
+						_edges.end(),
+						std::make_pair(_i, edge_container<EdgeType>(_i, edge))
+					)
+				);
+
 				_connect(from, to, i);
 				_set_neighbors_bidirectional(from, to);
 				_set_edges_bidirectional(from, to, i);
+				_i++;
 				return i;
 			}
 
