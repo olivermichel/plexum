@@ -9,12 +9,20 @@
 
 namespace omg
 {
+	//
+	// omg::Graph<VertexType, EdgeType>
+	//
+
 	template<class VertexType, class EdgeType>
 	class Graph
 	{
 	public:
 
 		static const std::size_t ELEMENT_INDEX_INIT = 1;
+
+		//
+		// omg::Graph<VertexType, EdgeType>::exception
+		//
 
 		class exception : public std::exception
 		{
@@ -40,6 +48,10 @@ namespace omg
 			std::string _what;
 		};
 
+		//
+		// omg::Graph<VertexType, EdgeType>::container<T>
+		//
+
 		template<class T>
 		class container
 		{
@@ -58,6 +70,10 @@ namespace omg
 
 		// forward declare edge_container for referenceability in vertex_container
 		template<class> class edge_container;
+
+		//
+		// omg::Graph<VertexType, EdgeType>::vertex_container
+		//
 
 		template<class>
 		class vertex_container : public container<VertexType>
@@ -135,6 +151,10 @@ namespace omg
 			std::vector<vertex_container<VertexType>*> _sub_vertices;
 		};
 
+		//
+		// omg::Graph<VertexType, EdgeType>::edge_container
+		//
+
 		template<class>
 		class edge_container : public container<EdgeType>
 		{
@@ -206,10 +226,18 @@ namespace omg
 			std::vector<edge_container<EdgeType>*> _sub_edges;
 		};
 
+		//
+		// omg::Graph<VertexType, EdgeType>::vertex_proxy
+		//
+
 		class vertex_proxy
 		{
 			friend class Graph<VertexType, EdgeType>;
 		public:
+
+			//
+			// omg::Graph<VertexType, EdgeType>::vertex_proxy::iterator
+			//
 
 			class iterator
 			{
@@ -219,18 +247,22 @@ namespace omg
 
 				iterator() = delete;
 
-				iterator(typename std::map<std::size_t, vertex_container<VertexType>>::iterator i)
-					: _i(i)
+				iterator(
+					Graph<VertexType, EdgeType>* g,
+					typename std::map<std::size_t, vertex_container<VertexType>>::iterator i
+				)
+					: _g(g),
+					  _i(i)
 				{ }
 
 				inline iterator operator++()
 				{
-					return ++_i;
+					return iterator(_g, ++_i);
 				}
 
 				inline iterator operator++(int i)
 				{
-					return _i++;
+					return iterator(_g, _i++);
 				}
 
 				inline VertexType& operator*()
@@ -309,6 +341,11 @@ namespace omg
 					return v;
 				}
 
+				inline Graph<VertexType, EdgeType>* _graph()
+				{
+					return _g;
+				}
+
 				inline vertex_container<VertexType>& _container()
 				{
 					return _i->second;
@@ -320,6 +357,8 @@ namespace omg
 				}
 
 			private:
+
+				Graph<VertexType, EdgeType>* _g;
 
 				typename std::map<std::size_t, vertex_container<VertexType>>::iterator _i;
 			};
@@ -334,7 +373,7 @@ namespace omg
 
 			iterator add(const VertexType& vertex)
 			{
-				return iterator(_vertices.insert(_vertices.end(), std::make_pair(_i++, vertex)));
+				return iterator(_graph, _vertices.insert(_vertices.end(), std::make_pair(_i++, vertex)));
 			}
 
 			iterator remove(iterator pos)
@@ -343,7 +382,7 @@ namespace omg
 					throw exception("vertex_proxy::remove(): vertex still has neighbors.");
 				}
 
-				return iterator(_vertices.erase(pos._i));
+				return iterator(_graph, _vertices.erase(pos._i));
 			}
 
 			iterator operator[](std::size_t index) throw(exception)
@@ -351,19 +390,19 @@ namespace omg
 				auto i = _vertices.find(index);
 
 				if (i != _vertices.end())
-					return iterator(_vertices.find(index));
+					return iterator(_graph, _vertices.find(index));
 				else
 					throw exception("vertex_proxy::operator[]: index does not exist.");
 			}
 
 			inline iterator begin()
 			{
-				return iterator(_vertices.begin());
+				return iterator(_graph, _vertices.begin());
 			}
 
 			inline iterator end()
 			{
-				return iterator(_vertices.end());
+				return iterator(_graph, _vertices.end());
 			}
 
 			inline std::size_t count()
@@ -385,12 +424,21 @@ namespace omg
 			std::map<std::size_t, vertex_container<VertexType>> _vertices;
 		};
 
+		//
+		// omg::Graph<VertexType, EdgeType>::edge_proxy
+		//
+
 		class edge_proxy
 		{
 			friend class Graph<VertexType, EdgeType>;
 			friend class vertex_proxy;
 
 		public:
+
+			//
+			// omg::Graph<VertexType, EdgeType>::edge_proxy::iterator
+			//
+
 			class iterator
 			{
 				friend class edge_proxy;
@@ -400,17 +448,22 @@ namespace omg
 
 				iterator() = delete;
 
-				inline iterator(typename std::map<std::size_t, edge_container<EdgeType>>::iterator i)
-					: _i(i) { }
+				inline iterator(
+					Graph<VertexType, EdgeType>* g,
+					typename std::map<std::size_t, edge_container<EdgeType>>::iterator i
+				)
+					: _g(g),
+					  _i(i)
+				{ }
 
 				inline iterator operator++()
 				{
-					return ++_i;
+					return iterator(_g, ++_i);
 				}
 
 				inline iterator operator++(int i)
 				{
-					return _i++;
+					return iterator(_g, _i++);
 				}
 
 				inline EdgeType& operator*()
@@ -502,6 +555,11 @@ namespace omg
 					return v;
 				}
 
+				inline Graph<VertexType, EdgeType>* _graph()
+				{
+					return _g;
+				}
+
 				inline edge_container<EdgeType>& _container()
 				{
 					return _i->second;
@@ -513,6 +571,8 @@ namespace omg
 				}
 
 			private:
+
+				Graph<VertexType, EdgeType>* _g;
 
 				typename std::map<std::size_t, edge_container<EdgeType>>::iterator _i;
 			};
@@ -530,7 +590,7 @@ namespace omg
 				typename vertex_proxy::iterator to,
 				const EdgeType& edge)
 			{
-				auto i = iterator(_edges.insert(_edges.end(), std::make_pair(_i++, edge)));
+				auto i = iterator(_graph, _edges.insert(_edges.end(), std::make_pair(_i++, edge)));
 				_connect(from, to, i);
 				_set_neighbors_bidirectional(from, to);
 				_set_edges_bidirectional(from, to, i);
@@ -541,7 +601,7 @@ namespace omg
 			{
 				_unset_neighbors_bidirectional(edge_it);
 				_unset_edges_bidirectional(edge_it);
-				return iterator(_edges.erase(edge_it._i));
+				return iterator(_graph, _edges.erase(edge_it._i));
 			}
 
 			iterator operator[](std::size_t index) throw(exception)
@@ -549,19 +609,19 @@ namespace omg
 				auto i = _edges.find(index);
 
 				if (i != _edges.end())
-					return iterator(_edges.find(index));
+					return iterator(_graph, _edges.find(index));
 				else
 					throw exception("edge_proxy::operator[]: index does not exist.");
 			}
 
 			iterator begin()
 			{
-				return iterator(_edges.begin());
+				return iterator(_graph, _edges.begin());
 			}
 
 			iterator end()
 			{
-				return iterator(_edges.end());
+				return iterator(_graph, _edges.end());
 			}
 
 			std::size_t count()
