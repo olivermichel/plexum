@@ -66,8 +66,9 @@ TEST_CASE("sub and super graphs", "[Graph]")
 {
 	omg::Graph<int, int> g1;
 	omg::Graph<int, int> g2;
+	omg::Graph<int, int> g3;
 
-	SECTION("map graph objects onto each other")
+	SECTION("graph objects can be mapped onto each other")
 	{
 		REQUIRE(typeid(g1) == typeid(omg::Graph<int,int>));
 		REQUIRE(typeid(g2) == typeid(omg::Graph<int,int>));
@@ -80,6 +81,44 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		REQUIRE(g1.has_subgraphs());
 		REQUIRE(g1.has_subgraph(&g2));
 		REQUIRE(g2.supergraph());
+	}
+
+	SECTION("unmapping a not mapped graph throws an exception")
+	{
+		g1.map(&g3);
+		REQUIRE_THROWS(g1.unmap(&g2));
+		REQUIRE_NOTHROW(g1.unmap(&g3));
+	}
+
+	SECTION("unmapping a not mapped vertex throws an exception")
+	{
+		auto a = g1.vertices.add(1);
+		auto b = g2.vertices.add(1);
+		auto c = g3.vertices.add(1);
+
+		g1.vertices[1].map(b);
+
+		REQUIRE_THROWS(g1.vertices[1].unmap(c));
+		REQUIRE_NOTHROW(g1.vertices[1].unmap(b));
+	}
+
+	SECTION("unmapping a not mapped edge throws an exception")
+	{
+		g1.vertices.add(1);
+		g2.vertices.add(1);
+		g3.vertices.add(1);
+		g1.vertices.add(2);
+		g2.vertices.add(2);
+		g3.vertices.add(2);
+
+		auto a = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		auto b = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		auto c = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+
+		g1.edges[1].map_link(b);
+
+		REQUIRE_THROWS(g1.edges[1].unmap(c));
+		REQUIRE_NOTHROW(g1.edges[1].unmap(b));
 	}
 
 	SECTION("map and unmap graph vertices")

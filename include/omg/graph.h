@@ -307,8 +307,19 @@ namespace omg
 
 				void unmap(iterator other)
 				{
-					_i->second._remove_sub_vertex(&(other._container()));
-					other._container()._unset_super_vertex();
+					auto sub_it = std::find(
+						_i->second._sub_vertices.begin(),
+						_i->second._sub_vertices.end(),
+						&(other._container())
+					);
+
+					if(sub_it != _i->second._sub_vertices.end()) {
+						_i->second._remove_sub_vertex(&(other._container()));
+						other._container()._unset_super_vertex();
+					} else {
+						throw exception("Graph::vertex_proxy::iterator::unmap(): "
+											"specified vertex is not a subvertex");
+					}
 				}
 
 				template<typename F>
@@ -526,8 +537,19 @@ namespace omg
 
 				void unmap(iterator other)
 				{
-					_i->second._remove_sub_edge(&(other._container()));
-					other._container()._unset_super_edge();
+					auto sub_it = std::find(
+						_i->second._sub_edges.begin(),
+						_i->second._sub_edges.end(),
+						&(other._container())
+					);
+
+					if(sub_it != _i->second._sub_edges.end()) {
+						_i->second._remove_sub_edge(&(other._container()));
+						other._container()._unset_super_edge();
+					} else {
+						throw exception("Graph::edge_proxy::iterator::unmap(): "
+											"specified edge is not a subedge");
+					}
 				}
 
 				template<typename F>
@@ -735,8 +757,14 @@ namespace omg
 
 		void unmap(Graph<VertexType, EdgeType>* subgraph)
 		{
-			_subgraphs.erase(std::find(_subgraphs.begin(), _subgraphs.end(), subgraph));
-			subgraph->_supergraph = nullptr;
+			auto subgraph_it = std::find(_subgraphs.begin(), _subgraphs.end(), subgraph);
+
+			if(subgraph_it != _subgraphs.end()) {
+				_subgraphs.erase(subgraph_it);
+				subgraph->_supergraph = nullptr;
+			} else {
+				throw exception("Graph::unmap(): specified graph is not a subgraph");
+			}
 		}
 
 		const Graph<VertexType, EdgeType>* supergraph()
