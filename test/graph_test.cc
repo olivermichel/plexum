@@ -33,7 +33,7 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 	{
 		auto a = g1.vertices.add(1);
 		auto b = g1.vertices.add(2);
-		auto e =g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		auto e = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
 
 		REQUIRE(e.from() == a);
 		REQUIRE(e.to() == b);

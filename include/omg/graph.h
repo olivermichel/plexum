@@ -272,6 +272,11 @@ namespace omg
 					return _i->second._element;
 				}
 
+				inline VertexType* operator&()
+				{
+					return &(_i->second._element);
+				}
+
 				inline bool operator==(const iterator& other)
 				{
 					return _i == other._i;
@@ -302,7 +307,7 @@ namespace omg
 				void map(iterator other, F f)
 				{
 					map(other);
-					f(**this, *other);
+					f(this->_ptr(), other._ptr());
 				}
 
 				void unmap(iterator other)
@@ -326,7 +331,7 @@ namespace omg
 				void unmap(iterator other, F f)
 				{
 					unmap(other);
-					f(**this, *other);
+					f(this->_ptr(), other._ptr());
 				}
 
 				bool has_subvertices()
@@ -519,7 +524,7 @@ namespace omg
 				void map_link(iterator other, F f)
 				{
 					map_link(other);
-					f(**this, *other);
+					f(this->_ptr(), other._ptr());
 				}
 
 				void map_path(iterator other)
@@ -532,7 +537,7 @@ namespace omg
 				void map_path(iterator other, F f)
 				{
 					map_path(other);
-					f(**this, *other);
+					f(this->_ptr(), other._ptr());
 				}
 
 				void unmap(iterator other)
@@ -556,7 +561,7 @@ namespace omg
 				void unmap(iterator other, F f)
 				{
 					unmap(other);
-					f(**this, *other);
+					f(this->_ptr(), other._ptr());
 				}
 
 				bool has_subedges()
@@ -811,7 +816,6 @@ namespace omg
 		g._print_adjacency_list(os);
 		return os;
 	};
-
 }
 
 #endif
