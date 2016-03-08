@@ -18,7 +18,7 @@ namespace omg
 	{
 	public:
 
-		static const std::size_t ELEMENT_INDEX_INIT = 1;
+		static const std::size_t ELEMENT_INDEX_INIT = 0;
 
 		//
 		// omg::Graph<VertexType, EdgeType>::exception

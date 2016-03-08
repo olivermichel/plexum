@@ -25,7 +25,7 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 	{
 		g1.vertices.add(1);
 		g1.vertices.add(2);
-		g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
 		REQUIRE(g1.edges.count() == 1);
 	}
 
@@ -33,12 +33,12 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 	{
 		auto a = g1.vertices.add(1);
 		auto b = g1.vertices.add(2);
-		auto e = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		auto e = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
 
 		REQUIRE(e.from() == a);
 		REQUIRE(e.to() == b);
-		REQUIRE(e.from().id() == 1);
-		REQUIRE(e.to().id() == 2);
+		REQUIRE(e.from().id() == 0);
+		REQUIRE(e.to().id() == 1);
 	}
 
 	SECTION("vertices and edges can be accessed through sequential indices")
@@ -47,17 +47,17 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		g1.vertices.add(2);
 		g1.vertices.add(3);
 
-		REQUIRE_NOTHROW(g1.vertices[3]);
-		REQUIRE_THROWS(g1.vertices[4]);
-		REQUIRE_THROWS(g1.vertices[0]);
+		REQUIRE_NOTHROW(g1.vertices[2]);
+		REQUIRE_THROWS(g1.vertices[3]);
+		REQUIRE_THROWS(g1.vertices[42]);
 
-		g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
-		g1.edges.add(g1.vertices[2], g1.vertices[3], 2);
+		g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		g1.edges.add(g1.vertices[1], g1.vertices[2], 2);
 
+		REQUIRE_NOTHROW(g1.edges[0]);
 		REQUIRE_NOTHROW(g1.edges[1]);
-		REQUIRE_NOTHROW(g1.edges[2]);
-		REQUIRE_THROWS(g1.edges[0]);
-		REQUIRE_THROWS(g1.edges[3]);
+		REQUIRE_THROWS(g1.edges[42]);
+		REQUIRE_THROWS(g1.edges[2]);
 	}
 
 	SECTION("edges can be accessed through a vertex pair")
@@ -65,17 +65,17 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		g1.vertices.add(1);
 		g1.vertices.add(2);
 		g1.vertices.add(3);
-		g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
-		g1.edges.add(g1.vertices[2], g1.vertices[3], 2);
+		g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		g1.edges.add(g1.vertices[1], g1.vertices[2], 2);
 
-		REQUIRE(*(g1.edges.between(g1.vertices[1], g1.vertices[2])) == 1);
-		REQUIRE(*(g1.edges.between(g1.vertices[2], g1.vertices[3])) == 2);
+		REQUIRE(*(g1.edges.between(g1.vertices[0], g1.vertices[1])) == 1);
+		REQUIRE(*(g1.edges.between(g1.vertices[1], g1.vertices[2])) == 2);
 
-		REQUIRE(*(g1.edges.between(g1.vertices[2], g1.vertices[1])) == 1);
-		REQUIRE(*(g1.edges.between(g1.vertices[3], g1.vertices[2])) == 2);
+		REQUIRE(*(g1.edges.between(g1.vertices[1], g1.vertices[0])) == 1);
+		REQUIRE(*(g1.edges.between(g1.vertices[2], g1.vertices[1])) == 2);
 
-		REQUIRE_THROWS(g1.edges.between(g1.vertices[3], g1.vertices[1]));
-		REQUIRE_THROWS(g1.edges.between(g1.vertices[1], g1.vertices[3]));
+		REQUIRE_THROWS(g1.edges.between(g1.vertices[2], g1.vertices[0]));
+		REQUIRE_THROWS(g1.edges.between(g1.vertices[0], g1.vertices[2]));
 	}
 }
 
@@ -114,10 +114,10 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		auto b = g2.vertices.add(1);
 		auto c = g3.vertices.add(1);
 
-		g1.vertices[1].map(b);
+		g1.vertices[0].map(b);
 
-		REQUIRE_THROWS(g1.vertices[1].unmap(c));
-		REQUIRE_NOTHROW(g1.vertices[1].unmap(b));
+		REQUIRE_THROWS(g1.vertices[0].unmap(c));
+		REQUIRE_NOTHROW(g1.vertices[0].unmap(b));
 	}
 
 	SECTION("unmapping a not mapped edge throws an exception")
@@ -129,14 +129,14 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		g2.vertices.add(2);
 		g3.vertices.add(2);
 
-		auto a = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
-		auto b = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
-		auto c = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		auto a = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		auto b = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		auto c = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
 
-		g1.edges[1].map_link(b);
+		g1.edges[0].map_link(b);
 
-		REQUIRE_THROWS(g1.edges[1].unmap(c));
-		REQUIRE_NOTHROW(g1.edges[1].unmap(b));
+		REQUIRE_THROWS(g1.edges[0].unmap(c));
+		REQUIRE_NOTHROW(g1.edges[0].unmap(b));
 	}
 
 	SECTION("map and unmap graph vertices")
@@ -144,39 +144,39 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		auto a = g1.vertices.add(1);
 		auto b = g2.vertices.add(1);
 
-		REQUIRE(!g1.vertices[1].has_subvertices());
-		REQUIRE(!g1.vertices[1].has_supervertex());
-		REQUIRE(!g2.vertices[1].has_subvertices());
-		REQUIRE(!g2.vertices[1].has_supervertex());
+		REQUIRE(!g1.vertices[0].has_subvertices());
+		REQUIRE(!g1.vertices[0].has_supervertex());
+		REQUIRE(!g2.vertices[0].has_subvertices());
+		REQUIRE(!g2.vertices[0].has_supervertex());
 
-		REQUIRE(g1.vertices[1].sub_vertices().empty());
-		REQUIRE(g1.vertices[1].super_vertex() == nullptr);
-		REQUIRE(g2.vertices[1].sub_vertices().empty());
-		REQUIRE(g2.vertices[1].super_vertex() == nullptr);
+		REQUIRE(g1.vertices[0].sub_vertices().empty());
+		REQUIRE(g1.vertices[0].super_vertex() == nullptr);
+		REQUIRE(g2.vertices[0].sub_vertices().empty());
+		REQUIRE(g2.vertices[0].super_vertex() == nullptr);
 
-		g1.vertices[1].map(g2.vertices[1]);
+		g1.vertices[0].map(g2.vertices[0]);
 
-		REQUIRE(g1.vertices[1].has_subvertices());
-		REQUIRE(!g1.vertices[1].has_supervertex());
-		REQUIRE(g2.vertices[1].has_supervertex());
-		REQUIRE(!g2.vertices[1].has_subvertices());
+		REQUIRE(g1.vertices[0].has_subvertices());
+		REQUIRE(!g1.vertices[0].has_supervertex());
+		REQUIRE(g2.vertices[0].has_supervertex());
+		REQUIRE(!g2.vertices[0].has_subvertices());
 
-		REQUIRE(g1.vertices[1].sub_vertices()[0] == b._ptr());
-		REQUIRE(g1.vertices[1].super_vertex() == nullptr);
-		REQUIRE(g2.vertices[1].sub_vertices().empty());
-		REQUIRE(g2.vertices[1].super_vertex() == a._ptr());
+		REQUIRE(g1.vertices[0].sub_vertices()[0] == b._ptr());
+		REQUIRE(g1.vertices[0].super_vertex() == nullptr);
+		REQUIRE(g2.vertices[0].sub_vertices().empty());
+		REQUIRE(g2.vertices[0].super_vertex() == a._ptr());
 
-		g1.vertices[1].unmap(g2.vertices[1]);
+		g1.vertices[0].unmap(g2.vertices[0]);
 
-		REQUIRE(!g1.vertices[1].has_subvertices());
-		REQUIRE(!g1.vertices[1].has_supervertex());
-		REQUIRE(!g2.vertices[1].has_subvertices());
-		REQUIRE(!g2.vertices[1].has_supervertex());
+		REQUIRE(!g1.vertices[0].has_subvertices());
+		REQUIRE(!g1.vertices[0].has_supervertex());
+		REQUIRE(!g2.vertices[0].has_subvertices());
+		REQUIRE(!g2.vertices[0].has_supervertex());
 
-		REQUIRE(g1.vertices[1].sub_vertices().empty());
-		REQUIRE(g1.vertices[1].super_vertex() == nullptr);
-		REQUIRE(g2.vertices[1].sub_vertices().empty());
-		REQUIRE(g2.vertices[1].super_vertex() == nullptr);
+		REQUIRE(g1.vertices[0].sub_vertices().empty());
+		REQUIRE(g1.vertices[0].super_vertex() == nullptr);
+		REQUIRE(g2.vertices[0].sub_vertices().empty());
+		REQUIRE(g2.vertices[0].super_vertex() == nullptr);
 	}
 
 	SECTION("map and unmap graph edges")
@@ -186,41 +186,41 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		g2.vertices.add(1);
 		g2.vertices.add(2);
 
-		auto a = g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
-		auto b = g2.edges.add(g2.vertices[1], g2.vertices[2], 1);
+		auto a = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		auto b = g2.edges.add(g2.vertices[0], g2.vertices[1], 1);
 
-		REQUIRE(!g1.edges[1].has_subedges());
-		REQUIRE(!g1.edges[1].has_superedge());
-		REQUIRE(!g2.edges[1].has_subedges());
-		REQUIRE(!g2.edges[1].has_superedge());
+		REQUIRE(!g1.edges[0].has_subedges());
+		REQUIRE(!g1.edges[0].has_superedge());
+		REQUIRE(!g2.edges[0].has_subedges());
+		REQUIRE(!g2.edges[0].has_superedge());
 
-		REQUIRE(g1.edges[1].sub_edges().empty());
-		REQUIRE(g1.edges[1].super_edge().empty());
-		REQUIRE(g2.edges[1].sub_edges().empty());
-		REQUIRE(g2.edges[1].super_edge().empty());
+		REQUIRE(g1.edges[0].sub_edges().empty());
+		REQUIRE(g1.edges[0].super_edge().empty());
+		REQUIRE(g2.edges[0].sub_edges().empty());
+		REQUIRE(g2.edges[0].super_edge().empty());
 
-		g1.edges[1].map_link(g2.edges[1]);
+		g1.edges[0].map_link(g2.edges[0]);
 
-		REQUIRE(g1.edges[1].has_subedges());
-		REQUIRE(!g1.edges[1].has_superedge());
-		REQUIRE(g2.edges[1].has_superedge());
-		REQUIRE(!g2.edges[1].has_subedges());
+		REQUIRE(g1.edges[0].has_subedges());
+		REQUIRE(!g1.edges[0].has_superedge());
+		REQUIRE(g2.edges[0].has_superedge());
+		REQUIRE(!g2.edges[0].has_subedges());
 
-		REQUIRE(g1.edges[1].sub_edges()[0] == b._ptr());
-		REQUIRE(g1.edges[1].super_edge().empty());
-		REQUIRE(g2.edges[1].sub_edges().empty());
-		REQUIRE(g2.edges[1].super_edge()[0] == a._ptr());
+		REQUIRE(g1.edges[0].sub_edges()[0] == b._ptr());
+		REQUIRE(g1.edges[0].super_edge().empty());
+		REQUIRE(g2.edges[0].sub_edges().empty());
+		REQUIRE(g2.edges[0].super_edge()[0] == a._ptr());
 
-		g1.edges[1].unmap(g2.edges[1]);
+		g1.edges[0].unmap(g2.edges[0]);
 
-		REQUIRE(!g1.edges[1].has_subedges());
-		REQUIRE(!g1.edges[1].has_superedge());
-		REQUIRE(!g2.edges[1].has_subedges());
-		REQUIRE(!g2.edges[1].has_superedge());
+		REQUIRE(!g1.edges[0].has_subedges());
+		REQUIRE(!g1.edges[0].has_superedge());
+		REQUIRE(!g2.edges[0].has_subedges());
+		REQUIRE(!g2.edges[0].has_superedge());
 
-		REQUIRE(g1.edges[1].sub_edges().empty());
-		REQUIRE(g1.edges[1].super_edge().empty());
-		REQUIRE(g2.edges[1].sub_edges().empty());
-		REQUIRE(g2.edges[1].super_edge().empty());
+		REQUIRE(g1.edges[0].sub_edges().empty());
+		REQUIRE(g1.edges[0].super_edge().empty());
+		REQUIRE(g2.edges[0].sub_edges().empty());
+		REQUIRE(g2.edges[0].super_edge().empty());
 	}
 }
