@@ -420,7 +420,8 @@ namespace omg
 				if (i != _vertices.end())
 					return iterator(_graph, _vertices.find(index));
 				else
-					throw exception("vertex_proxy::operator[]: index does not exist.");
+					throw exception("vertex_proxy::operator[]: index "
+									+ std::to_string(index) + " does not exist.");
 			}
 
 			inline iterator begin()
@@ -668,7 +669,8 @@ namespace omg
 				if (i != _edges.end())
 					return iterator(_graph, _edges.find(index));
 				else
-					throw exception("edge_proxy::operator[]: index does not exist.");
+					throw exception("edge_proxy::operator[]: index "
+									+ std::to_string(index) + " does not exist.");
 			}
 
 			iterator begin()
