@@ -59,6 +59,24 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		REQUIRE_THROWS(g1.edges[0]);
 		REQUIRE_THROWS(g1.edges[3]);
 	}
+
+	SECTION("edges can be accessed through a vertex pair")
+	{
+		g1.vertices.add(1);
+		g1.vertices.add(2);
+		g1.vertices.add(3);
+		g1.edges.add(g1.vertices[1], g1.vertices[2], 1);
+		g1.edges.add(g1.vertices[2], g1.vertices[3], 2);
+
+		REQUIRE(*(g1.edges.between(g1.vertices[1], g1.vertices[2])) == 1);
+		REQUIRE(*(g1.edges.between(g1.vertices[2], g1.vertices[3])) == 2);
+
+		REQUIRE(*(g1.edges.between(g1.vertices[2], g1.vertices[1])) == 1);
+		REQUIRE(*(g1.edges.between(g1.vertices[3], g1.vertices[2])) == 2);
+
+		REQUIRE_THROWS(g1.edges.between(g1.vertices[3], g1.vertices[1]));
+		REQUIRE_THROWS(g1.edges.between(g1.vertices[1], g1.vertices[3]));
+	}
 }
 
 
