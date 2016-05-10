@@ -297,6 +297,16 @@ namespace omg
 					return !(_i->second._neighbors.empty());
 				}
 
+				std::vector<iterator> neighbors()
+				{
+					std::vector<iterator> s;
+
+					for(vertex_container<VertexType>* n : _i->second._neighbors)
+						s.push_back(iterator(_graph(), _graph()->vertices._vertices.find(n->_id)));
+
+					return s;
+				};
+
 				void map(iterator other)
 				{
 					_i->second._add_sub_vertex(&(other._container()));
