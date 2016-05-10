@@ -96,9 +96,35 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		REQUIRE(*(v3.neighbors()[0]) == *v2);
 	}
 
+	SECTION("vertices can be removed")
+	{
+		auto v1 = g1.vertices.add(1);
+		auto v2 = g1.vertices.add(2);
+		auto v3 = g1.vertices.add(3);
+		auto e1 = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		auto e2= g1.edges.add(g1.vertices[1], g1.vertices[2], 2);
+
+		REQUIRE_THROWS(g1.vertices.remove(v1));
+		g1.edges.remove(e1);
+		REQUIRE_NOTHROW(g1.vertices.remove(v1));
+		REQUIRE_NOTHROW(g1.vertices.remove_with_edges(v2));
+
+		REQUIRE(g1.vertices.count() == 1);
+		REQUIRE(g1.edges.count() == 0);
+	}
+
+	SECTION("edges can be removed")
+	{
+		auto v1 = g1.vertices.add(1);
+		auto v2 = g1.vertices.add(2);
+		auto e1 = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+
+		REQUIRE(g1.edges.count() == 1);
+		REQUIRE_NOTHROW(g1.edges.remove(g1.edges.between(v2, v1)));
+		REQUIRE_THROWS(g1.edges.remove(g1.edges.between(v2, v1)));
+		REQUIRE(g1.edges.count() == 0);
 	}
 }
-
 
 TEST_CASE("sub and super graphs", "[Graph]")
 {

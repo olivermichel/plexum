@@ -423,6 +423,15 @@ namespace omg
 				return iterator(_graph, _vertices.erase(pos._i));
 			}
 
+			iterator remove_with_edges(iterator pos)
+			{
+				if(pos.has_neighbors())
+					for(iterator n : pos.neighbors())
+						_graph->edges.remove(_graph->edges.between(pos, n));
+
+				return iterator(_graph, _vertices.erase(pos._i));
+			}
+
 			iterator operator[](std::size_t index) throw(exception)
 			{
 				auto i = _vertices.find(index);
