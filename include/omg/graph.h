@@ -453,7 +453,7 @@ namespace omg
 				return iterator(_graph, _vertices.end());
 			}
 
-			inline std::size_t count()
+			inline std::size_t count() const
 			{
 				return _vertices.size();
 			}
@@ -702,7 +702,7 @@ namespace omg
 				return iterator(_graph, _edges.end());
 			}
 
-			std::size_t count()
+			std::size_t count() const
 			{
 				return _edges.size();
 			}
