@@ -432,6 +432,11 @@ namespace omg
 				return iterator(_graph, _vertices.erase(pos._i));
 			}
 
+			bool has_index(std::size_t index)
+			{
+				return _vertices.find(index) != _vertices.end();
+			}
+
 			iterator operator[](std::size_t index) throw(exception)
 			{
 				auto i = _vertices.find(index);
@@ -679,6 +684,11 @@ namespace omg
 				_unset_neighbors_bidirectional(edge_it);
 				_unset_edges_bidirectional(edge_it);
 				return iterator(_graph, _edges.erase(edge_it._i));
+			}
+
+			bool has_index(std::size_t index)
+			{
+				return _edges.find(index) != _edges.end();
 			}
 
 			iterator operator[](std::size_t index) throw(exception)

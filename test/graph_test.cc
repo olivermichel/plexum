@@ -18,6 +18,11 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 	{
 		g1.vertices.add(1);
 		g1.vertices.add(2);
+
+		REQUIRE(g1.vertices.has_index(0));
+		REQUIRE(g1.vertices.has_index(1));
+		REQUIRE(!(g1.vertices.has_index(2)));
+
 		REQUIRE(g1.vertices.count() == 2);
 	}
 
