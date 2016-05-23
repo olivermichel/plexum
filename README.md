@@ -18,7 +18,7 @@ graphs.
     omg::Graph<std::string, std::string> g;
     auto v1 = g.vertices.add("v1");
     auto v2 = g.vertices.add("v2");
-    g,edges.add(v1, v2, "e1");
+    g.edges.add(v1, v2, "e1");
     
     for(auto v : g.vertices)
         std::cout << v << " "; // v1 v2
