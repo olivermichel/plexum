@@ -1,16 +1,16 @@
 
-#ifndef OMG_GRAPH_H
-#define OMG_GRAPH_H
+#ifndef PLEXUM_GRAPH_H
+#define PLEXUM_GRAPH_H
 
 #include <iostream>
 #include <map>
 #include <vector>
 #include <numeric>
 
-namespace omg
+namespace plexum
 {
 	//
-	// omg::Graph<VertexType, EdgeType>
+	// plexum::Graph<VertexType, EdgeType>
 	//
 
 	template<class VertexType, class EdgeType>
@@ -21,7 +21,7 @@ namespace omg
 		static const std::size_t ELEMENT_INDEX_INIT = 0;
 
 		//
-		// omg::Graph<VertexType, EdgeType>::exception
+		// plexum::Graph<VertexType, EdgeType>::exception
 		//
 
 		class exception : public std::exception
@@ -49,7 +49,7 @@ namespace omg
 		};
 
 		//
-		// omg::Graph<VertexType, EdgeType>::container<T>
+		// plexum::Graph<VertexType, EdgeType>::container<T>
 		//
 
 		template<class T>
@@ -74,7 +74,7 @@ namespace omg
 		template<class> class edge_container;
 
 		//
-		// omg::Graph<VertexType, EdgeType>::vertex_container
+		// plexum::Graph<VertexType, EdgeType>::vertex_container
 		//
 
 		template<class>
@@ -154,7 +154,7 @@ namespace omg
 		};
 
 		//
-		// omg::Graph<VertexType, EdgeType>::edge_container
+		// plexum::Graph<VertexType, EdgeType>::edge_container
 		//
 
 		template<class>
@@ -229,7 +229,7 @@ namespace omg
 		};
 
 		//
-		// omg::Graph<VertexType, EdgeType>::vertex_proxy
+		// plexum::Graph<VertexType, EdgeType>::vertex_proxy
 		//
 
 		class vertex_proxy
@@ -238,7 +238,7 @@ namespace omg
 		public:
 
 			//
-			// omg::Graph<VertexType, EdgeType>::vertex_proxy::iterator
+			// plexum::Graph<VertexType, EdgeType>::vertex_proxy::iterator
 			//
 
 			class iterator
@@ -478,7 +478,7 @@ namespace omg
 		};
 
 		//
-		// omg::Graph<VertexType, EdgeType>::edge_proxy
+		// plexum::Graph<VertexType, EdgeType>::edge_proxy
 		//
 
 		class edge_proxy
@@ -489,7 +489,7 @@ namespace omg
 		public:
 
 			//
-			// omg::Graph<VertexType, EdgeType>::edge_proxy::iterator
+			// plexum::Graph<VertexType, EdgeType>::edge_proxy::iterator
 			//
 
 			class iterator

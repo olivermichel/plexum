@@ -1,4 +1,6 @@
-# Oliver's Graph Library (omg)
+# Plexum Graph Library
+
+by Oliver Michel < oliver dot michel at colorado dot edu >
 
 This is a STL-compliant header-only graph library working with arbitrary types of
 vertices or edges. The library currently only supports undirected simple

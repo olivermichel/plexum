@@ -1,12 +1,12 @@
 #include <catch.h>
 
-#include <omg/graph.h>
+#include <plexum/graph.h>
 
 TEST_CASE("graph vertices and edges", "[Graph]")
 {
-	omg::Graph<int, int> g1;
+	plexum::Graph<int, int> g1;
 
-	REQUIRE(typeid(g1) == typeid(omg::Graph<int,int>));
+	REQUIRE(typeid(g1) == typeid(plexum::Graph<int,int>));
 
 	SECTION("graphs are empty upon construction")
 	{
@@ -133,14 +133,14 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 
 TEST_CASE("sub and super graphs", "[Graph]")
 {
-	omg::Graph<int, int> g1;
-	omg::Graph<int, int> g2;
-	omg::Graph<int, int> g3;
+	plexum::Graph<int, int> g1;
+	plexum::Graph<int, int> g2;
+	plexum::Graph<int, int> g3;
 
 	SECTION("graph objects can be mapped onto each other")
 	{
-		REQUIRE(typeid(g1) == typeid(omg::Graph<int,int>));
-		REQUIRE(typeid(g2) == typeid(omg::Graph<int,int>));
+		REQUIRE(typeid(g1) == typeid(plexum::Graph<int,int>));
+		REQUIRE(typeid(g2) == typeid(plexum::Graph<int,int>));
 
 		REQUIRE(!g1.has_subgraphs());
 		REQUIRE(!g2.supergraph());
