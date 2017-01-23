@@ -1,3 +1,10 @@
+/*
+ * plexum graph library
+ *
+ * oliver dot michel at colorado dot edu
+ *
+ * MIT License
+ */
 
 #ifndef PLEXUM_GRAPH_H
 #define PLEXUM_GRAPH_H
@@ -13,6 +20,10 @@ namespace plexum
 	// plexum::Graph<VertexType, EdgeType>
 	//
 
+	/*! @brief The undirected graph class.
+	 *  @tparam VertexType the vertex type
+	 *  @tparam EdgeType the edge type
+	 */
 	template<class VertexType, class EdgeType>
 	class Graph
 	{
@@ -785,6 +796,7 @@ namespace plexum
 
 	public:
 
+		/*! @brief constructs a new Graph object */
 		Graph()
 			: vertices(this),
 			  edges(this),
@@ -792,22 +804,35 @@ namespace plexum
 			  _subgraphs()
 		{ }
 
+		/*! @brief maps the graph *subgraph* onto the graph
+		 *  @param subgraph the subgraph to be mapped
+		 */
 		void map(Graph<VertexType, EdgeType>* subgraph)
 		{
 			_subgraphs.push_back(subgraph);
 			subgraph->_supergraph = this;
 		}
 
+		/*! @brief checks if *subgraph* is mapped onto the graph
+ 		 *  @param subgraph the subgraph to be checked
+ 		 *  @return true if *subgraph* is mapped, false otherwise
+ 		 */
 		bool has_subgraph(Graph<VertexType, EdgeType>* subgraph) const
 		{
 			return std::find(_subgraphs.begin(), _subgraphs.end(), subgraph) != _subgraphs.end();
 		}
 
+		/*! @brief checks whether the graph has any subgraphs mapped
+	  	 *  @return true if there are mapped subgraphs, false otherwise
+	  	 */
 		bool has_subgraphs() const
 		{
 			return !_subgraphs.empty();
 		}
 
+		/*! @brief unmaps *subgraph* from the graph
+   		 *  @param subgraph the subgraph to be unmapped
+   		 */
 		void unmap(Graph<VertexType, EdgeType>* subgraph)
 		{
 			auto subgraph_it = std::find(_subgraphs.begin(), _subgraphs.end(), subgraph);
@@ -820,21 +845,31 @@ namespace plexum
 			}
 		}
 
+		/*! @brief returns a pointer to the graph's super-graph
+		 *  @return a pointer to the super-graph or std::nullptr if there is no super-graph
+		 */
 		const Graph<VertexType, EdgeType>* supergraph()
 		{
 			return _supergraph;
 		};
 
+		/*! @brief  returns a reference to a std::vector containing pointers
+		 * 		    to the graph's sub-graphs
+ 		 *  @return a reference to a std::vector containing pointers to the graph's sub-graph or
+ 		 *  		a reference to an empty std::vector if there are no sub-graphs
+ 		 */
 		const std::vector<Graph<VertexType, EdgeType>*>& subgraphs()
 		{
 			return _subgraphs;
 		};
 
-		template<class T, class U> // T, U in order not to shadow V, E
+		template<class T, class U> // T, U in order not to shadow VertexType, EdgeType
 		friend std::ostream& operator<<(std::ostream& os, Graph<T, U>& g);
 
+		/*! @brief the vertex_proxy holding the graph's vertices */
 		vertex_proxy vertices;
 
+		/*! @brief the edge_proxy holding the graph's edges */
 		edge_proxy edges;
 
 	private:
