@@ -417,8 +417,8 @@ namespace plexum
 
 			explicit vertex_proxy(Graph<VertexType, EdgeType>* graph)
 				: _graph(graph),
-				  _vertices(),
-				  _i(Graph::ELEMENT_INDEX_INIT)
+				  _i(Graph::ELEMENT_INDEX_INIT),
+				  _vertices()
 			{ }
 
 			iterator add(const VertexType& vertex)
@@ -677,8 +677,8 @@ namespace plexum
 
 			edge_proxy(Graph<VertexType, EdgeType>* graph)
 				: _graph(graph),
-				  _edges(),
-				  _i(Graph::ELEMENT_INDEX_INIT)
+				  _i(Graph::ELEMENT_INDEX_INIT),
+				  _edges()
 			{ }
 
 			iterator add(
