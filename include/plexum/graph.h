@@ -29,12 +29,16 @@ namespace plexum
 	{
 	public:
 
+		/*! @brief initialization for the internal vertex/edge index management */
 		static const std::size_t ELEMENT_INDEX_INIT = 0;
 
 		//
 		// plexum::Graph<VertexType, EdgeType>::exception
 		//
 
+		/*! @brief A custom exception class
+		 *  @details inherits from std::exception
+		 */
 		class exception : public std::exception
 		{
 		public:
@@ -47,6 +51,9 @@ namespace plexum
 				: _what(what)
 			{ }
 
+			/*! @brief returns the error message associated with the exception
+			 * @return a character array containing the error message associated with the exception
+			 */
 			virtual const char* what() const throw()
 			{
 				return _what.c_str();
@@ -62,6 +69,8 @@ namespace plexum
 		//
 		// plexum::Graph<VertexType, EdgeType>::container<T>
 		//
+
+		//! @cond
 
 		template<class T>
 		class container
@@ -238,6 +247,8 @@ namespace plexum
 
 			std::vector<edge_container<EdgeType>*> _sub_edges;
 		};
+
+		//! @endcond
 
 		//
 		// plexum::Graph<VertexType, EdgeType>::vertex_proxy
