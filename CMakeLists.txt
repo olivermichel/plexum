@@ -6,9 +6,18 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include(cmake/catch.cmake)
 
 set(TESTS
-        test/test_main.cc
-        test/graph_test.cc
-        )
+    test/test_main.cc
+    test/graph_test.cc
+    )
 
 add_executable(run_tests ${TESTS})
 target_include_directories(run_tests PUBLIC include test/include)
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+        )
+endif(DOXYGEN_FOUND)

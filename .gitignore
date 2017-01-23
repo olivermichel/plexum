@@ -2,3 +2,4 @@ test/include
 .DS_Store
 .idea
 doc
+cmake-build-*
