@@ -9,6 +9,7 @@
 #ifndef PLEXUM_GRAPH_H
 #define PLEXUM_GRAPH_H
 
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <vector>
