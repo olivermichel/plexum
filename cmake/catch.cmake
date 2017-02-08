@@ -1,4 +1,6 @@
+set(CATCH_VERSION 1.7.1)
+
 file(DOWNLOAD
-        https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
+        https://github.com/philsquared/Catch/releases/download/v${CATCH_VERSION}/catch.hpp
         ${CMAKE_HOME_DIRECTORY}/test/include/catch.h
         )
