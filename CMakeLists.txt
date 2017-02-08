@@ -13,6 +13,9 @@ set(TESTS
 add_executable(run_tests ${TESTS})
 target_include_directories(run_tests PUBLIC include test/include)
 
+add_executable(sandbox sandbox.cc)
+target_include_directories(sandbox PUBLIC include)
+
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
     add_custom_target(doc
