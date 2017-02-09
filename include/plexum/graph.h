@@ -295,6 +295,11 @@ namespace plexum
 					return _i->second._element;
 				}
 
+				inline VertexType* operator->()
+				{
+					return &(_i->second._element);
+				}
+
 				inline VertexType* operator&()
 				{
 					return &(_i->second._element);
@@ -545,6 +550,11 @@ namespace plexum
 				inline EdgeType& operator*()
 				{
 					return _i->second._element;
+				}
+
+				inline EdgeType* operator->()
+				{
+					return &(_i->second._element);
 				}
 
 				inline bool operator==(const iterator& other)
