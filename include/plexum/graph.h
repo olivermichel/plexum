@@ -891,14 +891,47 @@ namespace plexum
 			return _subgraphs;
 		};
 
+		std::vector<typename edge_proxy::iterator> find_path(typename vertex_proxy::iterator start,
+															 typename vertex_proxy::iterator target)
+			throw(exception)
+		{
+			std::vector<typename edge_proxy::iterator> path;
+			std::map<unsigned long, long> bfs_tree = _bfs_adjecency(start, target);
+
+			unsigned long v = target.id();
+
+			if (bfs_tree[v] < 0)
+				throw exception("there is no path between the specified vertices");
+
+			while (v != start.id()) {
+				auto a = vertices[v];
+				v = bfs_tree[v];
+				auto b = vertices[v];
+				path.push_back(edges.between(a, b));
+			}
+
+			std::reverse(path.begin(), path.end());
+			return path;
+		}
+
+		template<class T, class U> // T, U in order not to shadow VertexType, EdgeType
+		friend std::ostream& operator<<(std::ostream& os, Graph<T, U>& g);
+
+		/*! @brief the vertex_proxy holding the graph's vertices */
+		vertex_proxy vertices;
+
+		/*! @brief the edge_proxy holding the graph's edges */
+		edge_proxy edges;
+
+	private:
 
 		const std::map<unsigned long, long>
 			_bfs_adjecency(unsigned long start, unsigned long target)
 		{
-			std::map<unsigned long, long> visited;
-			std::list<unsigned long> queue;
 			unsigned long c = 0;
 			auto s = this->vertices[start];
+			std::map<unsigned long, long> visited;
+			std::list<unsigned long> queue;
 
 			for (auto i = vertices.begin(); i != vertices.end(); i++)
 				visited[i.id()] = -1;
@@ -922,27 +955,14 @@ namespace plexum
 					}
 				}
 			}
-
 			return visited;
 		};
-
 
 		const std::map<unsigned long, long> _bfs_adjecency(typename vertex_proxy::iterator start,
 														   typename vertex_proxy::iterator target)
 		{
 			return _bfs_adjecency(start.id(), target.id());
 		}
-
-		template<class T, class U> // T, U in order not to shadow VertexType, EdgeType
-		friend std::ostream& operator<<(std::ostream& os, Graph<T, U>& g);
-
-		/*! @brief the vertex_proxy holding the graph's vertices */
-		vertex_proxy vertices;
-
-		/*! @brief the edge_proxy holding the graph's edges */
-		edge_proxy edges;
-
-	private:
 
 		void _print_adjacency_list(std::ostream& os)
 		{
