@@ -300,11 +300,6 @@ namespace plexum
 					return &(_i->second._element);
 				}
 
-				inline VertexType* operator&()
-				{
-					return &(_i->second._element);
-				}
-
 				inline bool operator==(const iterator& other)
 				{
 					return _i == other._i;
