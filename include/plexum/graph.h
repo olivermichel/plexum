@@ -310,6 +310,11 @@ namespace plexum
 					return _i != other._i;
 				}
 
+				inline bool operator<(const iterator& other) const
+				{
+					return _i->first < (other._i)->first;
+				}
+
 				inline std::size_t id()
 				{
 					return _i->first;
@@ -560,6 +565,11 @@ namespace plexum
 				inline bool operator!=(const iterator& other)
 				{
 					return _i != other._i;
+				}
+
+				inline bool operator<(const iterator& other)
+				{
+					return _i->first < (other._i)->first;
 				}
 
 				inline std::size_t id()
