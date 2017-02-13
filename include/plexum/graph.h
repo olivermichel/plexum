@@ -14,6 +14,7 @@
 #include <map>
 #include <vector>
 #include <numeric>
+#include <list>
 
 namespace plexum
 {
@@ -889,6 +890,48 @@ namespace plexum
 		{
 			return _subgraphs;
 		};
+
+
+		const std::map<unsigned long, long>
+			_bfs_adjecency(unsigned long start, unsigned long target)
+		{
+			std::map<unsigned long, long> visited;
+			std::list<unsigned long> queue;
+			unsigned long c = 0;
+			auto s = this->vertices[start];
+
+			for (auto i = vertices.begin(); i != vertices.end(); i++)
+				visited[i.id()] = -1;
+
+			visited[s.id()] = start;
+			queue.push_back(s.id());
+
+			while (!queue.empty()) {
+				c = queue.front();
+				queue.pop_front();
+
+				if (c == target)
+					break;
+
+				std::vector<typename vertex_proxy::iterator> neighbors = vertices[c].neighbors();
+
+				for (auto i : neighbors) {
+					if (visited[i.id()] < 0) {
+						visited[i.id()] = c;
+						queue.push_back(i.id());
+					}
+				}
+			}
+
+			return visited;
+		};
+
+
+		const std::map<unsigned long, long> _bfs_adjecency(typename vertex_proxy::iterator start,
+														   typename vertex_proxy::iterator target)
+		{
+			return _bfs_adjecency(start.id(), target.id());
+		}
 
 		template<class T, class U> // T, U in order not to shadow VertexType, EdgeType
 		friend std::ostream& operator<<(std::ostream& os, Graph<T, U>& g);
