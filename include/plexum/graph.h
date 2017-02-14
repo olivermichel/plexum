@@ -760,15 +760,15 @@ namespace plexum
 							 typename vertex_proxy::iterator to)
 				throw(exception)
 			{
-				for(auto edge : _edges) {
-
-					bool from_match_1 = edge.second._from == &(from._container());
-					bool to_match_1   = edge.second._to   == &(to._container());
-					bool from_match_2 = edge.second._to   == &(from._container());
-					bool to_match_2   = edge.second._from == &(to._container());
+				for (typename edge_proxy::iterator i = _graph->edges.begin(); i != _graph->edges.end(); ++i)
+				{
+					bool from_match_1 = i.from().id() == from.id();
+					bool to_match_1   = i.to().id()   == to.id();
+					bool from_match_2 = i.to().id()   == from.id();
+					bool to_match_2   = i.from().id() == to.id();
 
 					if((from_match_1 && to_match_1) || (from_match_2 && to_match_2))
-						return operator[](edge.first);
+						return i;
 				}
 				throw exception("edge_proxy::between(a, b): there is no edge between a and b");
 			}
