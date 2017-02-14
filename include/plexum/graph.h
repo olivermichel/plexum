@@ -893,10 +893,18 @@ namespace plexum
 
 		std::vector<typename edge_proxy::iterator> find_path(typename vertex_proxy::iterator start,
 															 typename vertex_proxy::iterator target)
+		{
+			return find_path(start, target, [](EdgeType*) { return true; });
+		}
+
+		template<typename F>
+		std::vector<typename edge_proxy::iterator> find_path(typename vertex_proxy::iterator start,
+															 typename vertex_proxy::iterator target,
+															 F cstr)
 			throw(exception)
 		{
 			std::vector<typename edge_proxy::iterator> path;
-			std::map<unsigned long, long> bfs_tree = _bfs_adjecency(start, target);
+			std::map<unsigned long, long> bfs_tree = _bfs_adjacency(start.id(), target.id(), cstr);
 
 			unsigned long v = target.id();
 
@@ -925,8 +933,10 @@ namespace plexum
 
 	private:
 
+		template<typename F>
 		const std::map<unsigned long, long>
-			_bfs_adjecency(unsigned long start, unsigned long target)
+			_bfs_adjacency(unsigned long start, unsigned long target,
+						   F cstr)
 		{
 			unsigned long c = 0;
 			auto s = this->vertices[start];
@@ -943,26 +953,26 @@ namespace plexum
 				c = queue.front();
 				queue.pop_front();
 
+				auto c_iter = vertices[c];
+
 				if (c == target)
 					break;
 
 				std::vector<typename vertex_proxy::iterator> neighbors = vertices[c].neighbors();
 
-				for (auto i : neighbors) {
+				for (typename vertex_proxy::iterator i : neighbors) {
+					auto e = edges.between(c_iter, i);
+
 					if (visited[i.id()] < 0) {
-						visited[i.id()] = c;
-						queue.push_back(i.id());
+						if (cstr(&(*e))) {
+							visited[i.id()] = c;
+							queue.push_back(i.id());
+						}
 					}
 				}
 			}
 			return visited;
 		};
-
-		const std::map<unsigned long, long> _bfs_adjecency(typename vertex_proxy::iterator start,
-														   typename vertex_proxy::iterator target)
-		{
-			return _bfs_adjecency(start.id(), target.id());
-		}
 
 		void _print_adjacency_list(std::ostream& os)
 		{
