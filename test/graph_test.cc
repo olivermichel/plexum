@@ -2,6 +2,21 @@
 
 #include <plexum/graph.h>
 
+class V {
+public:
+	V() = delete;
+	V(unsigned long i) : i(i) { }
+	unsigned long i;
+};
+
+class E {
+public:
+	E() = delete;
+	E(unsigned long i, double weight) : i(i), weight(weight) { }
+	unsigned long i;
+	double weight;
+};
+
 TEST_CASE("graph vertices and edges", "[Graph]")
 {
 	plexum::Graph<int, int> g1;
@@ -273,5 +288,64 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		REQUIRE(g1.edges[0].super_edge().empty());
 		REQUIRE(g2.edges[0].sub_edges().empty());
 		REQUIRE(g2.edges[0].super_edge().empty());
+	}
+}
+
+TEST_CASE("bfs", "[Graph]")
+{
+	plexum::Graph<V, E> g;
+
+	REQUIRE(typeid(g) == typeid(plexum::Graph<V,E>));
+
+	auto v1 = g.vertices.add(0);
+	auto v2 = g.vertices.add(1);
+	auto v3 = g.vertices.add(2);
+	auto v4 = g.vertices.add(4);
+	auto e1 = g.edges.add(v1, v2, {0, 1});
+	auto e2 = g.edges.add(v2, v3, {1, 2});
+	auto e3 = g.edges.add(v3, v1, {2, 2});
+
+	REQUIRE(g.vertices.count() == 4);
+	REQUIRE(g.edges.count() == 3);
+
+	SECTION("find an unconstrained BFS path")
+	{
+		std::vector<plexum::Graph<V, E>::edge_proxy::iterator> path;
+		REQUIRE_NOTHROW(path = g.find_path(v1, v2));
+		REQUIRE(path.size() == 1);
+		REQUIRE(path[0].from() == v1);
+		REQUIRE(path[0].to() == v2);
+	}
+
+	SECTION("throw an exception if there is no unconstrained path")
+	{
+		std::vector<plexum::Graph<V, E>::edge_proxy::iterator> path;
+		REQUIRE_THROWS(path = g.find_path(v1, v4));
+	}
+
+	SECTION("finds a constrained BFS path")
+	{
+		std::vector<plexum::Graph<V, E>::edge_proxy::iterator> path;
+		REQUIRE_NOTHROW(path = g.find_path(v1, v2, [](E* e) { return e->weight >= 1; }));
+		REQUIRE(path.size() == 1);
+		REQUIRE(path[0].from() == v1);
+		REQUIRE(path[0].to() == v2);
+	}
+
+	SECTION("finds a constrained BFS path")
+	{
+		std::vector<plexum::Graph<V, E>::edge_proxy::iterator> path;
+		REQUIRE_NOTHROW(path = g.find_path(v1, v2, [](E* e) { return e->weight >= 2; }));
+		REQUIRE(path.size() == 2);
+		REQUIRE(path[0].from() == v3);
+		REQUIRE(path[0].to() == v1);
+		REQUIRE(path[1].from() == v2);
+		REQUIRE(path[1].to() == v3);
+	}
+
+	SECTION("throws an exception if the is no constrained path")
+	{
+		std::vector<plexum::Graph<V, E>::edge_proxy::iterator> path;
+		REQUIRE_THROWS(path = g.find_path(v1, v3, [](E* e) { return e->weight >= 10; }));
 	}
 }
