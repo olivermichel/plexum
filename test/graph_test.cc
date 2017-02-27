@@ -146,6 +146,74 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 	}
 }
 
+TEST_CASE("internal id management", "[Graph]")
+{
+	plexum::Graph<int, int> g;
+	auto a = g.vertices.add(1);
+	auto b = g.vertices.add(2);
+	auto c = g.vertices.add(3);
+	auto d = g.edges.add(a, b, 1);
+	auto e = g.edges.add(b, c, 2);
+
+	SECTION("vertices have monotonously increasing indices")
+	{
+		auto i = g.vertices.begin();
+		REQUIRE(i.id() == 0);
+		i++;
+		REQUIRE(i.id() == 1);
+		i++;
+		REQUIRE(i.id() == 2);
+		i++;
+		REQUIRE(i == g.vertices.end());
+	}
+
+	SECTION("edges have monotonously increasing indices")
+	{
+		auto i = g.edges.begin();
+		REQUIRE(i.id() == 0);
+		i++;
+		REQUIRE(i.id() == 1);
+		i++;
+		REQUIRE(i == g.edges.end());
+	}
+
+	SECTION("vertex indices remain consistent when removing vertices")
+	{
+		g.edges.remove(d);
+		g.edges.remove(e);
+		g.vertices.remove(b);
+
+		auto i = g.vertices.begin();
+		REQUIRE(i.id() == 0);
+		i++;
+		REQUIRE(i.id() == 2);
+		i++;
+		REQUIRE(i == g.vertices.end());
+	}
+
+	SECTION("vertex indices remain consistent when removing vertices")
+	{
+		g.edges.remove(d);
+
+		auto i = g.edges.begin();
+		REQUIRE(i.id() == 1);
+		i++;
+		REQUIRE(i == g.edges.end());
+	}
+
+	SECTION("when adding a new vertex the new index is MAX_INDEX + 1")
+	{
+		auto f = g.vertices.add(4);
+		REQUIRE(f.id() == 3);
+	}
+
+	SECTION("when adding a new edge the new index is MAX_INDEX + 1")
+	{
+		auto f = g.edges.add(a, b, 3);
+		REQUIRE(f.id() == 2);
+	}
+}
+
 TEST_CASE("sub and super graphs", "[Graph]")
 {
 	plexum::Graph<int, int> g1;
@@ -343,7 +411,7 @@ TEST_CASE("bfs", "[Graph]")
 		REQUIRE(path[1].to() == v3);
 	}
 
-	SECTION("throws an exception if the is no constrained path")
+	SECTION("throws an exception if there is no constrained path")
 	{
 		std::vector<plexum::Graph<V, E>::edge_proxy::iterator> path;
 		REQUIRE_THROWS(path = g.find_path(v1, v3, [](E* e) { return e->weight >= 10; }));
