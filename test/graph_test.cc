@@ -98,8 +98,8 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		REQUIRE_THROWS(g1.edges.between(g1.vertices[0], g1.vertices[2]));
 	}
 
-	SECTION("vertices.neighbors() returns iterators to neighbor vertices") {
-
+	SECTION("vertex.neighbors() returns iterators to neighbor vertices")
+	{
 		auto v1 = g1.vertices.add(1);
 		auto v2 = g1.vertices.add(2);
 		auto v3 = g1.vertices.add(3);
@@ -114,6 +114,24 @@ TEST_CASE("graph vertices and edges", "[Graph]")
 		REQUIRE(*(v2.neighbors()[0]) == *v1);
 		REQUIRE(*(v2.neighbors()[1]) == *v3);
 		REQUIRE(*(v3.neighbors()[0]) == *v2);
+	}
+
+	SECTION("vertex.edges() returns iterators to edges connected to respective vertex")
+	{
+		auto v1 = g1.vertices.add(1);
+		auto v2 = g1.vertices.add(2);
+		auto v3 = g1.vertices.add(3);
+		auto e1 = g1.edges.add(g1.vertices[0], g1.vertices[1], 1);
+		auto e2 = g1.edges.add(g1.vertices[1], g1.vertices[0], 2);
+
+		REQUIRE(v1.edges().size() == 2);
+		REQUIRE(v2.edges().size() == 2);
+		REQUIRE(v3.edges().size() == 0);
+
+		REQUIRE(v1.edges()[0] == e1);
+		REQUIRE(v1.edges()[1] == e2);
+		REQUIRE(v2.edges()[0] == e1);
+		REQUIRE(v2.edges()[1] == e2);
 	}
 
 	SECTION("vertices can be removed")

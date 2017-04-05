@@ -256,6 +256,8 @@ namespace plexum
 		// plexum::Graph<VertexType, EdgeType>::vertex_proxy
 		//
 
+		class edge_proxy;
+
 		class vertex_proxy
 		{
 			friend class Graph<VertexType, EdgeType>;
@@ -330,11 +332,24 @@ namespace plexum
 				{
 					std::vector<iterator> s;
 
-					for(vertex_container<VertexType>* n : _i->second._neighbors)
+					for (vertex_container<VertexType>* n : _i->second._neighbors)
 						s.push_back(iterator(_graph(), _graph()->vertices._vertices.find(n->_id)));
 
 					return s;
 				};
+
+				std::vector<typename edge_proxy::iterator> edges()
+				{
+					std::vector<typename edge_proxy::iterator> s;
+
+					for (edge_container<EdgeType>* e : _i->second._in_edges)
+						s.push_back(typename edge_proxy::iterator(_graph(), _graph()->edges._edges.find(e->_id)));
+					/*
+					for (edge_container<EdgeType>* e : _i->second._out_edges)
+						s.push_back(typename edge_proxy::iterator(_graph(), _graph()->edges._edges.find(e->_id)));
+					*/
+					return s;
+				}
 
 				void map(iterator other)
 				{
