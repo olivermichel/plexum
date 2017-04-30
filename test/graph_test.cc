@@ -329,6 +329,19 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		REQUIRE(g1.vertices[0].super_vertex() == nullptr);
 		REQUIRE(g2.vertices[0].sub_vertices().empty());
 		REQUIRE(g2.vertices[0].super_vertex() == nullptr);
+
+		g1.vertices[0].map(g2.vertices[0]);
+		g2.vertices[0].unmap_from_super_vertex();
+
+		REQUIRE(!g1.vertices[0].has_subvertices());
+		REQUIRE(!g1.vertices[0].has_supervertex());
+		REQUIRE(!g2.vertices[0].has_subvertices());
+		REQUIRE(!g2.vertices[0].has_supervertex());
+
+		REQUIRE(g1.vertices[0].sub_vertices().empty());
+		REQUIRE(g1.vertices[0].super_vertex() == nullptr);
+		REQUIRE(g2.vertices[0].sub_vertices().empty());
+		REQUIRE(g2.vertices[0].super_vertex() == nullptr);
 	}
 
 	SECTION("map and unmap graph edges")
@@ -364,6 +377,19 @@ TEST_CASE("sub and super graphs", "[Graph]")
 		REQUIRE(g2.edges[0].super_edge()[0] == a._ptr());
 
 		g1.edges[0].unmap(g2.edges[0]);
+
+		REQUIRE(!g1.edges[0].has_subedges());
+		REQUIRE(!g1.edges[0].has_superedge());
+		REQUIRE(!g2.edges[0].has_subedges());
+		REQUIRE(!g2.edges[0].has_superedge());
+
+		REQUIRE(g1.edges[0].sub_edges().empty());
+		REQUIRE(g1.edges[0].super_edge().empty());
+		REQUIRE(g2.edges[0].sub_edges().empty());
+		REQUIRE(g2.edges[0].super_edge().empty());
+
+		g1.edges[0].map_link(g2.edges[0]);
+		g2.edges[0].unmap_from_super_edge();
 
 		REQUIRE(!g1.edges[0].has_subedges());
 		REQUIRE(!g1.edges[0].has_superedge());

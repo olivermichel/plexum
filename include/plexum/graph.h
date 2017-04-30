@@ -343,10 +343,12 @@ namespace plexum
 					std::vector<typename edge_proxy::iterator> s;
 
 					for (edge_container<EdgeType>* e : _i->second._in_edges)
-						s.push_back(typename edge_proxy::iterator(_graph(), _graph()->edges._edges.find(e->_id)));
+						s.push_back(typename edge_proxy::iterator(_graph(),
+							_graph()->edges._edges.find(e->_id)));
 					/*
 					for (edge_container<EdgeType>* e : _i->second._out_edges)
-						s.push_back(typename edge_proxy::iterator(_graph(), _graph()->edges._edges.find(e->_id)));
+						s.push_back(typename edge_proxy::iterator(_graph(),
+					 		_graph()->edges._edges.find(e->_id)));
 					*/
 					return s;
 				}
@@ -379,6 +381,16 @@ namespace plexum
 						throw exception("Graph::vertex_proxy::iterator::unmap(): "
 											"specified vertex is not a subvertex");
 					}
+				}
+
+				void unmap_from_super_vertex()
+				{
+					if (_container()._super_vertex == nullptr)
+						throw exception("Graph::vertex_proxy::iterator::unmap_from_super_vertex():"
+						                " specified vertex does not have a super vertex");
+
+					this->_container()._super_vertex->_remove_sub_vertex(&(this->_container()));
+					this->_container()._unset_super_vertex();
 				}
 
 				template<typename F>
@@ -641,6 +653,14 @@ namespace plexum
 				{
 					unmap(other);
 					f(this->_ptr(), other._ptr());
+				}
+
+				void unmap_from_super_edge()
+				{
+					for( auto c : this->_container()._super_edge) {
+						c->_remove_sub_edge(&(this->_container()));
+						this->_container()._unset_super_edge();
+					}
 				}
 
 				bool has_subedges()
